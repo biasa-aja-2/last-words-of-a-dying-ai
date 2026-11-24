@@ -25,6 +25,11 @@ def gate(text):
         return "entry must be a single line"
     if text != text.strip():
         return "entry has leading or trailing whitespace"
+    # A stray control character (tab, bell, ...) would survive the
+    # single-line test but corrupt the line when a judge reads it raw.
+    for char in text:
+        if ord(char) < 0x20:
+            return "entry contains control character U+%04X" % ord(char)
     if len(text) > MAX_CHARS:
         return "entry is %d characters, over the %d limit" % (
             len(text),
